@@ -16,12 +16,12 @@ public class Course {
     private List<Shift> shifts = new ArrayList<>();
     @OneToMany(mappedBy = "course", fetch = FetchType.EAGER)
     private Set<Inscription> inscriptions = new HashSet<>();
-
+    public Course() {
+    }
     public Course(String name, String description) {
         this.name = name;
         this.description = description;
     }
-
     public void addInscription(Inscription inscription){
         inscription.setCourse(this);
         inscriptions.add(inscription);

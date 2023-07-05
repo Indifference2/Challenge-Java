@@ -21,7 +21,8 @@ public class Person {
     private String password;
     @OneToMany(mappedBy = "person", fetch = FetchType.EAGER)
     private Set<Inscription> inscriptions = new HashSet<>();
-
+    public Person() {
+    }
     public Person(long ssn, String name, String lastName, String email, String phone, String birthday, String state, String city, String address, String password) {
         this.ssn = ssn;
         this.name = name;
