@@ -14,5 +14,6 @@ public class Course {
     @GeneratedValue(strategy = GenerationType.AUTO, generator = "native")
     private Long id;
     private String name;
+    private String description;
     private List<Shift> shifts = new ArrayList<>();
 }
