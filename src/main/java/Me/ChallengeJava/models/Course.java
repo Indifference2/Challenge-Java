@@ -16,4 +16,20 @@ public class Course {
     private String name;
     private String description;
     private List<Shift> shifts = new ArrayList<>();
+
+    public Course(String name, String description) {
+        this.name = name;
+        this.description = description;
+    }
+
+    /* GETTERS */
+    public Long getId() {return id;}
+    public String getName() {return name;}
+    public String getDescription() {return description;}
+    public List<Shift> getShifts() {return shifts;}
+
+    /* SETTERS */
+    public void setName(String name) {this.name = name;}
+    public void setDescription(String description) {this.description = description;}
+    public void setShifts(List<Shift> shifts) {this.shifts = shifts;}
 }
