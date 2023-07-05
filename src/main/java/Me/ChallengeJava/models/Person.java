@@ -1,6 +1,8 @@
 package Me.ChallengeJava.models;
 
 import javax.persistence.*;
+import java.util.HashSet;
+import java.util.Set;
 
 @Entity
 public class Person {
@@ -17,6 +19,8 @@ public class Person {
     private String city;
     private String address;
     private String password;
+    @OneToMany(mappedBy = "person", fetch = FetchType.EAGER)
+    private Set<Inscription> inscriptions = new HashSet<>();
 
     public Person(long ssn, String name, String lastName, String email, String phone, String birthday, String state, String city, String address, String password) {
         this.ssn = ssn;
@@ -30,6 +34,11 @@ public class Person {
         this.address = address;
         this.password = password;
     }
+    public void addInscription(Inscription inscription){
+        inscription.setPerson(this);
+        inscriptions.add(inscription);
+    }
+
     /* GETTERS */
     public long getId() {return id;}
     public long getSsn() {return ssn;}
@@ -42,6 +51,7 @@ public class Person {
     public String getCity() {return city;}
     public String getAddress() {return address;}
     public String getPassword() {return password;}
+    public Set<Inscription> getInscriptions() {return inscriptions;}
 
     /* SETTERS */
     public void setSsn(long ssn) {this.ssn = ssn;}
@@ -54,4 +64,6 @@ public class Person {
     public void setCity(String city) {this.city = city;}
     public void setAddress(String address) {this.address = address;}
     public void setPassword(String password) {this.password = password;}
+    public void setSsn(Long ssn) {this.ssn = ssn;}
+    public void setInscriptions(Set<Inscription> inscriptions) {this.inscriptions = inscriptions;}
 }
