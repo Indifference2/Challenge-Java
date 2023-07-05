@@ -1,12 +1,10 @@
 package Me.ChallengeJava.models;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
+import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 @Entity
 public class Course {
@@ -16,10 +14,17 @@ public class Course {
     private String name;
     private String description;
     private List<Shift> shifts = new ArrayList<>();
+    @OneToMany(mappedBy = "course", fetch = FetchType.EAGER)
+    private Set<Inscription> inscriptions = new HashSet<>();
 
     public Course(String name, String description) {
         this.name = name;
         this.description = description;
+    }
+
+    public void addInscription(Inscription inscription){
+        inscription.setCourse(this);
+        inscriptions.add(inscription);
     }
 
     /* GETTERS */
