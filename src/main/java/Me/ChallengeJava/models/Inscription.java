@@ -17,6 +17,7 @@ public class Inscription {
     private Course course;
     public Inscription() {
     }
+
     /* GETTERS */
     public Long getId() {return id;}
     public LocalDateTime getDateTime() {return dateTime;}
