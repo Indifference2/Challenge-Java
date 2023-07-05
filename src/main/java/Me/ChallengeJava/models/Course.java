@@ -32,9 +32,11 @@ public class Course {
     public String getName() {return name;}
     public String getDescription() {return description;}
     public List<Shift> getShifts() {return shifts;}
+    public Set<Inscription> getInscriptions() {return inscriptions;}
 
     /* SETTERS */
     public void setName(String name) {this.name = name;}
     public void setDescription(String description) {this.description = description;}
     public void setShifts(List<Shift> shifts) {this.shifts = shifts;}
+    public void setInscriptions(Set<Inscription> inscriptions) {this.inscriptions = inscriptions;}
 }
