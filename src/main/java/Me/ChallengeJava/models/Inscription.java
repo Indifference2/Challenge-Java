@@ -1,7 +1,5 @@
 package Me.ChallengeJava.models;
 
-import org.hibernate.annotations.Fetch;
-
 import javax.persistence.*;
 import java.time.LocalDateTime;
 
