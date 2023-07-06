@@ -5,7 +5,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 @Entity
-public class Person {
+public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO, generator = "native")
     private Long id;
@@ -21,9 +21,9 @@ public class Person {
     private String password;
     @OneToMany(mappedBy = "person", fetch = FetchType.EAGER)
     private Set<Inscription> inscriptions = new HashSet<>();
-    public Person() {
+    public User() {
     }
-    public Person(long ssn, String name, String lastName, String email, String phone, String birthday, String state, String city, String address, String password) {
+    public User(long ssn, String name, String lastName, String email, String phone, String birthday, String state, String city, String address, String password) {
         this.ssn = ssn;
         this.name = name;
         this.lastName = lastName;
