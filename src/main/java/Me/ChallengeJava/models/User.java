@@ -36,7 +36,7 @@ public class User {
         this.password = password;
     }
     public void addInscription(Inscription inscription){
-        inscription.setPerson(this);
+        inscription.setUser(this);
         inscriptions.add(inscription);
     }
 

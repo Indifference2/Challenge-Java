@@ -19,11 +19,11 @@ public class Inscription {
     /* GETTERS */
     public Long getId() {return id;}
     public LocalDateTime getDateTime() {return dateTime;}
-    public User getPerson() {return user;}
+    public User getUser() {return user;}
     public Course getCourse() {return course;}
 
     /* SETTERS */
     public void setDateTime(LocalDateTime dateTime) {this.dateTime = dateTime;}
-    public void setPerson(User user) {this.user = user;}
+    public void setUser(User user) {this.user = user;}
     public void setCourse(Course course) {this.course = course;}
 }
