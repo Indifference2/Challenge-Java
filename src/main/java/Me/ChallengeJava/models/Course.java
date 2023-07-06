@@ -19,9 +19,10 @@ public class Course {
     private Set<Inscription> inscriptions = new HashSet<>();
     public Course() {
     }
-    public Course(String name, String description) {
+    public Course(String name, String description, List<Shift> shifts) {
         this.name = name;
         this.description = description;
+        this.shifts = shifts;
     }
     public void addInscription(Inscription inscription){
         inscription.setCourse(this);
