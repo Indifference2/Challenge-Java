@@ -9,14 +9,15 @@ import Me.ChallengeJava.repositories.CourseRepository;
 import Me.ChallengeJava.repositories.InscriptionRepository;
 import Me.ChallengeJava.repositories.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.rest.webmvc.ResourceNotFoundException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.stream.Collectors;
+
+import static java.util.stream.Collectors.toList;
 
 @RestController
 public class InscriptionController {
@@ -33,11 +34,22 @@ public class InscriptionController {
         return inscriptionRepository.findAll()
                 .stream()
                 .map(inscription -> new InscriptionDTO(inscription))
-                .collect(Collectors.toList());
+                .collect(toList());
+    }
+    // Get current inscriptions
+    @GetMapping("/api/inscriptions/current")
+    public List<InscriptionDTO> getCurrentInscriptions(Authentication authentication){
+        // Get user authenticated
+        User userAuthenticated = userRepository.findByEmail(authentication.getName());
+        // Return all inscriptions user
+        return userAuthenticated.getInscriptions()
+                .stream()
+                .map(inscription -> new InscriptionDTO(inscription))
+                .collect(toList());
     }
     // Create a new inscription
     @PostMapping("/api/inscriptions")
-    public ResponseEntity<Object> createInscription(@RequestBody InscriptionApplicationDTO inscriptionApplicationDTO){
+    public ResponseEntity<Object> createInscription(@RequestBody InscriptionApplicationDTO inscriptionApplicationDTO, Authentication authentication){
         // Get user to enroll
         User userToEnroll = userRepository.findById(inscriptionApplicationDTO.getUser_id()).orElse(null);
         // Get course to enroll user
@@ -109,11 +121,36 @@ public class InscriptionController {
 
         return new ResponseEntity<>("Inscription modified successfully", HttpStatus.ACCEPTED);
     }
+    // Delete an inscription
     @DeleteMapping("/api/inscriptions/{id}")
-    public void deleteInscriptions(@PathVariable Long id){
-        Inscription inscriptionToDelete = inscriptionRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Inscription not found for this id ::" + id));
+    public ResponseEntity<?> deleteInscription(@PathVariable Long id, Authentication authentication){
+        // Get inscription to delete
+        Inscription inscriptionToDelete = inscriptionRepository.findById(id).orElse(null);
+        // Get user request petition
+        User userRequest = userRepository.findByEmail(authentication.getName());
+        // Get rol
+        String rol = authentication.getAuthorities().stream().collect(toList()).get(0).toString();
+        // Get inscriptions user authenticated
+        List<Inscription> inscriptionsUserAuthenticated = userRequest.getInscriptions().stream().collect(toList());
+        // Verification inscription to delete
+        if(inscriptionToDelete == null) {
+            return new ResponseEntity<>("Inscription doesn't exist", HttpStatus.FORBIDDEN);
+        }
+        // Verification ROL ADMIN
+        if(!rol.equals("ADMIN")){
+            // Verification others ROL
+                if(inscriptionsUserAuthenticated.stream().noneMatch(inscription -> inscription.getId().equals(inscriptionToDelete.getId()))){
+                    return new ResponseEntity<>("This inscription doesn't belong you", HttpStatus.FORBIDDEN);
+                }
+                // Delete inscription
+                inscriptionRepository.delete(inscriptionToDelete);
+
+                return new ResponseEntity<>("Inscription deleted successfully", HttpStatus.ACCEPTED);
+        }
         // Delete inscription
         inscriptionRepository.delete(inscriptionToDelete);
+
+        return new ResponseEntity<>("Inscription deleted successfully", HttpStatus.ACCEPTED);
     }
 
 }

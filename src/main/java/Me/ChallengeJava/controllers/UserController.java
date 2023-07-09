@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.rest.webmvc.ResourceNotFoundException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -27,10 +28,26 @@ public class UserController {
                 .map(user -> new UserDTO(user))
                 .collect(Collectors.toList());
     }
-
+    @GetMapping("/api/users/{id}")
+    public ResponseEntity<Object> getUser(@PathVariable Long id){
+        // Get user requested
+        User userRequested = userRepository.findById(id).orElse(null);
+        // Verification user requested
+        if(userRequested == null){
+            return new ResponseEntity<>("User doesn't exist", HttpStatus.FORBIDDEN);
+        }
+        return new ResponseEntity<>(new UserDTO(userRequested), HttpStatus.ACCEPTED);
+    }
+    // Obtain current user
+    @GetMapping("/api/users/current")
+    public UserDTO getInfoCurrent(Authentication authentication){
+        // Get user authenticated
+        User userAuthenticated = userRepository.findByEmail(authentication.getName());
+        return new UserDTO(userAuthenticated);
+    }
     // Create user
     @PostMapping("/api/users")
-    public ResponseEntity<Object> createUser(@RequestBody UserApplicationDTO userApplicationDTO){
+    public ResponseEntity<Object> createUser(@RequestBody UserApplicationDTO userApplicationDTO, Authentication authentication){
         // Validation SSN (Social Security Number)
         if(userApplicationDTO.getSsn().isBlank()){
             return new ResponseEntity<>("SSN can't be on blank", HttpStatus.FORBIDDEN);
@@ -52,6 +69,9 @@ public class UserController {
         // Validation email
         if(userApplicationDTO.getEmail().isBlank()){
             return new ResponseEntity<>("Email can't be on blank", HttpStatus.FORBIDDEN);
+        }
+        if(userRepository.findByEmail(authentication.getName()) != null){
+            return new ResponseEntity<>("This email already exist", HttpStatus.FORBIDDEN);
         }
         // Validation phone
         if(userApplicationDTO.getPhone().isBlank()){
@@ -99,7 +119,7 @@ public class UserController {
     }
     // Modify a user
     @PutMapping("/api/users/{id}")
-    public ResponseEntity<Object> modifyUser(@PathVariable Long id, @RequestBody UserApplicationDTO userApplicationDTO){
+    public ResponseEntity<Object> modifyUser(@PathVariable Long id, @RequestBody UserApplicationDTO userApplicationDTO, Authentication authentication){
         // User to modify
         User userToModify = userRepository.findById(id).orElse(null);
         // Validation user to modify
@@ -125,6 +145,9 @@ public class UserController {
             // Validation email
             if(userApplicationDTO.getEmail().isBlank()){
                 return new ResponseEntity<>("Email can't be on blank", HttpStatus.FORBIDDEN);
+            }
+            if(userRepository.findByEmail(authentication.getName()) != null){
+                return new ResponseEntity<>("This email already exist", HttpStatus.FORBIDDEN);
             }
             // Validation phone
             if(userApplicationDTO.getPhone().isBlank()){
@@ -173,10 +196,16 @@ public class UserController {
     }
     // Delete a user
     @DeleteMapping("/api/users/{id}")
-    public void deleteUser(@PathVariable Long id){
-        User userToDelete = userRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("User not found for this id ::" + id));
+    public ResponseEntity<?> deleteUser(@PathVariable Long id){
+        // Get user
+        User userToDelete = userRepository.findById(id).orElse(null);
+        // Verification user
+        if(userToDelete == null){
+            return new ResponseEntity<>("This user doesn't exist", HttpStatus.FORBIDDEN);
+        }
         // Delete user
         userRepository.delete(userToDelete);
+        return new ResponseEntity<>("User deleted successfully", HttpStatus.OK);
     }
 
 }
